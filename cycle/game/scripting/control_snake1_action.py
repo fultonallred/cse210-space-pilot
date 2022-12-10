@@ -19,7 +19,7 @@ class ControlSnake1Action(ControlSnake0Action):
         Args:
             keyboard_service (KeyboardService): An instance of KeyboardService.
         """
-        super().__init__()
+        super().__init__(keyboard_service)
 
     def execute(self, cast, script):
         """Executes the control actors action.

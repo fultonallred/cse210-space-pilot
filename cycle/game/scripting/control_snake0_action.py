@@ -30,19 +30,19 @@ class ControlSnake0Action(Action):
             script (Script): The script of Actions in the game.
         """
         # left
-        if self._keyboard_service.is_key_down('a'):
+        if self._keyboard_service.is_key_down('F'):
             self._direction = Point(-constants.CELL_SIZE, 0)
         
         # right
-        if self._keyboard_service.is_key_down('d'):
+        if self._keyboard_service.is_key_down('H'):
             self._direction = Point(constants.CELL_SIZE, 0)
         
         # up
-        if self._keyboard_service.is_key_down('w'):
+        if self._keyboard_service.is_key_down('T'):
             self._direction = Point(0, -constants.CELL_SIZE)
         
         # down
-        if self._keyboard_service.is_key_down('s'):
+        if self._keyboard_service.is_key_down('G'):
             self._direction = Point(0, constants.CELL_SIZE)
         
         snake = cast.get_actors("snakes")[0]
