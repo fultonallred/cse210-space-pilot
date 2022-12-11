@@ -30,23 +30,29 @@ class DrawActorsAction(Action):
         score0 = scores[0]
         score1 = scores[1]
         minerals = cast.get_actors("minerals")
-        foods = cast.get_actors("foods")
-        food0 = foods[0]
-        food1 = foods[1]
+        #foods = cast.get_actors("foods")
+        #food0 = foods[0]
+        #food1 = foods[1]
         #snakes = cast.get_actors("snakes")
         #segments0 = snakes[0].get_segments()
         #segments1 = snakes[1].get_segments()
         spaceship = cast.get_first_actor("ships")
-        lasers = spaceship.get_lasers()
         spaceship_segments = spaceship.get_segments()
+        ship_lasers = spaceship.get_lasers()
+        asteroid = cast.get_first_actor("asteroids")
+        asteroid_segments = asteroid.get_segments()
+        asteroid_lasers = asteroid.get_lasers()
         messages = cast.get_actors("messages")
 
         self._video_service.clear_buffer()
         self._video_service.draw_actors(minerals)
-        self._video_service.draw_actor(food0)
-        self._video_service.draw_actor(food1)
+        #self._video_service.draw_actor(food0)
+        #self._video_service.draw_actor(food1)
         self._video_service.draw_actors(spaceship_segments)
-        self._video_service.draw_actors(lasers)
+        self._video_service.draw_actors(ship_lasers)
+        self._video_service.draw_actors(asteroid_segments)
+        self._video_service.draw_actors(asteroid_lasers)
+
         #self._video_service.draw_actors(segments0)
         #self._video_service.draw_actors(segments1)
         self._video_service.draw_actor(score0)

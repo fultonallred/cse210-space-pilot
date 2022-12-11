@@ -2,6 +2,7 @@ import constants
 from game.casting.actor import Actor
 from game.scripting.action import Action
 from game.shared.point import Point
+import random
 
 class HandleCollisionsAction(Action):
     """
@@ -25,10 +26,12 @@ class HandleCollisionsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-        # if not self._is_game_over:
+        if not self._is_game_over:
         #     self._handle_food_collision(cast)
         #     self._handle_segment_collision(cast)
         #     self._handle_game_over(cast)
+            self._handle_mineral_collision(cast)
+            self._handle_laser_collision(cast)
 
     # def _handle_food_collision(self, cast):
     #     """Updates the score nd moves the food if the snake collides with the food.
@@ -80,6 +83,40 @@ class HandleCollisionsAction(Action):
     #             self._is_game_over = True
     #         elif head1.get_position().equals(segment.get_position()):
     #             self._is_game_over = True
+
+    def _handle_mineral_collision(self, cast):
+        spaceship = cast.get_first_actor("ships")
+        segments = spaceship.get_segments()
+        body = segments[1]
+
+        body_position = body.get_position()
+        minerals = cast.get_actors("minerals")
+        
+        for mineral in minerals:
+            mineral_position = mineral.get_position()
+            if body_position.equals(mineral_position):
+                """"""
+    
+    def _handle_laser_collision(self, cast):
+        """"""
+        spaceship = cast.get_first_actor("ships")
+        lasers = spaceship.get_lasers()
+        minerals = cast.get_actors("minerals")
+        for mineral in minerals:
+            for laser in lasers:
+                if mineral.get_position().is_close(laser.get_position()):
+                    print("Laser hits")
+                    mineral.randomize()
+                    spaceship.remove_laser(laser)
+
+        asteroid = cast.get_first_actor("asteroids")
+        segments = asteroid.get_segments()
+        for segment in segments:
+            for laser in lasers:
+                if segment.get_position().is_close(laser.get_position()):
+                    asteroid.add_damage(1)
+                    spaceship.remove_laser(laser)
+
         
     def _handle_game_over(self, cast):
         """Shows the 'game over' message and turns the snake and food white if the game is over.

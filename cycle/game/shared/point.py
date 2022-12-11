@@ -80,3 +80,8 @@ class Point:
             Point: A new Point that is scaled.
         """
         return Point(self._x * factor, self._y * factor)
+
+    def is_close(self, other):
+
+        y_distance = abs(self._y - other.get_y())
+        return self._x == other.get_x() and y_distance <= 15
