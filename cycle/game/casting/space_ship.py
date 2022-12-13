@@ -14,6 +14,7 @@ class Spaceship(Actor):
         self._lasers = []
         self._firing = False
         self._cooldown = 0
+        self._health = 10
         self._prepare_body()
 
     def _prepare_body(self):
@@ -81,6 +82,14 @@ class Spaceship(Actor):
 
     def get_lasers(self):
         return self._lasers
+
+    def add_health(self, health):
+        """Add a given amount of heatlh, positive or negative, to the spacehship."""
+        self._health += health
+
+    def get_health(self):
+        """Returns health of the ship."""
+        return self._health
 
     def remove_laser(self, laser):
         self._lasers.remove(laser)

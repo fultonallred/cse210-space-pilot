@@ -5,7 +5,7 @@ from game.shared.point import Point
 from game.casting.cast import Cast
 from game.casting.mineral import Mineral
 #from game.casting.food import Food
-from game.casting.score import Score
+from game.casting.health_display import HealthDisplay
 from game.casting.score1 import Score1
 #from game.casting.snake import Snake
 #from game.casting.snake1 import Snake1
@@ -34,7 +34,7 @@ def main():
     #cast.add_actor("snakes", Snake1()) # Player 2
     cast.add_actor("ships", Spaceship())
     cast.add_actor("asteroids", Asteroid())
-    cast.add_actor("scores", Score())
+    cast.add_actor("displays", HealthDisplay())
     cast.add_actor("scores", Score1())
 
     for _ in range(constants.DEFAULT_MINERALS):

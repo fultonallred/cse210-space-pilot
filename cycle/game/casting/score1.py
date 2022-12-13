@@ -1,9 +1,8 @@
-from game.casting.score import Score
 import constants
 from game.shared.point import Point
+from game.casting.actor import Actor
 
-
-class Score1(Score):
+class Score1(Actor):
     """
     A record of points made or lost for player 2. 
     

@@ -26,9 +26,9 @@ class DrawActorsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-        scores = cast.get_actors("scores")
-        score0 = scores[0]
-        score1 = scores[1]
+        #scores = cast.get_actors("scores")
+        health_display = cast.get_first_actor("displays")
+        #score1 = scores[1]
         minerals = cast.get_actors("minerals")
         #foods = cast.get_actors("foods")
         #food0 = foods[0]
@@ -55,7 +55,7 @@ class DrawActorsAction(Action):
 
         #self._video_service.draw_actors(segments0)
         #self._video_service.draw_actors(segments1)
-        self._video_service.draw_actor(score0)
-        self._video_service.draw_actor(score1, True)
+        self._video_service.draw_actor(health_display)
+        #self._video_service.draw_actor(score1, True)
         self._video_service.draw_actors(messages, True)
         self._video_service.flush_buffer()
