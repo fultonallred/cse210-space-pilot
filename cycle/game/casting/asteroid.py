@@ -44,7 +44,7 @@ class Asteroid(Spaceship):
         if constants.MAX_Y - head_y <= 1:
             self.reset()
 
-        trigger = random.randint(1, 10)
+        trigger = random.randint(1, 20)
         if trigger == 1:
             self.fire_laser()
 
@@ -68,6 +68,8 @@ class Asteroid(Spaceship):
         self._segments = []
         self._health = 10
         self._prepare_body()
+        speed = random.randint(1, 5)
+        self._velocity = Point(0, speed)
 
     def add_damage(self, amount):
         self._health -= amount

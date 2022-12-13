@@ -4,7 +4,7 @@ from game.shared.color import Color
 from game.shared.point import Point
 from game.casting.cast import Cast
 from game.casting.mineral import Mineral
-#from game.casting.food import Food
+from game.casting.food import Food
 from game.casting.health_display import HealthDisplay
 from game.casting.score1 import Score1
 #from game.casting.snake import Snake
@@ -23,12 +23,13 @@ from game.scripting.random_growth import RandomGrowth
 from game.directing.director import Director
 from game.services.keyboard_service import KeyboardService
 from game.services.video_service import VideoService
+from game.scripting.udpate_hud import UpdateHUD
 
 def main():
     
-    # create the cast
+    # create the casts
     cast = Cast()
-    # cast.add_actor("foods", Food())
+    cast.add_actor("foods", Food())
     # cast.add_actor("foods", Food())
     #cast.add_actor("snakes", Snake()) # Player 1
     #cast.add_actor("snakes", Snake1()) # Player 2
@@ -51,6 +52,7 @@ def main():
     #script.add_action("input", ControlSnake1Action(keyboard_service))
     script.add_action("input", ControlSpaceshipAction(keyboard_service))
     script.add_action("update", MoveActorsAction())
+    script.add_action("update", UpdateHUD())
     #script.add_action("update", ControlMineralsAction())
     script.add_action("update", HandleCollisionsAction())
     #script.add_action("update", RandomGrowth())

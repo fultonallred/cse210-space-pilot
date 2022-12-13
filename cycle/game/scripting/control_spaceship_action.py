@@ -57,3 +57,4 @@ class ControlSpaceshipAction(Action):
         self._direction = Point(dx, dy)
         self._direction = self._direction.scale(constants.CELL_SIZE)
         spaceship.set_velocity(self._direction)
+        

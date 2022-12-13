@@ -26,16 +26,9 @@ class DrawActorsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-        #scores = cast.get_actors("scores")
         health_display = cast.get_first_actor("displays")
-        #score1 = scores[1]
         minerals = cast.get_actors("minerals")
-        #foods = cast.get_actors("foods")
-        #food0 = foods[0]
-        #food1 = foods[1]
-        #snakes = cast.get_actors("snakes")
-        #segments0 = snakes[0].get_segments()
-        #segments1 = snakes[1].get_segments()
+        food = cast.get_first_actor("foods")
         spaceship = cast.get_first_actor("ships")
         spaceship_segments = spaceship.get_segments()
         ship_lasers = spaceship.get_lasers()
@@ -45,17 +38,13 @@ class DrawActorsAction(Action):
         messages = cast.get_actors("messages")
 
         self._video_service.clear_buffer()
+        self._video_service.draw_actor(food)
+        self._video_service.draw_actor(health_display)
         self._video_service.draw_actors(minerals)
-        #self._video_service.draw_actor(food0)
-        #self._video_service.draw_actor(food1)
         self._video_service.draw_actors(spaceship_segments)
         self._video_service.draw_actors(ship_lasers)
         self._video_service.draw_actors(asteroid_segments)
         self._video_service.draw_actors(asteroid_lasers)
-
-        #self._video_service.draw_actors(segments0)
-        #self._video_service.draw_actors(segments1)
-        self._video_service.draw_actor(health_display)
-        #self._video_service.draw_actor(score1, True)
         self._video_service.draw_actors(messages, True)
+
         self._video_service.flush_buffer()

@@ -90,6 +90,6 @@ class Mineral(Actor):
         self._color = Color(r, g, b)
 
         x = random.randint(1, 59) * 15
-        y = -30
+        y = 0
         new_position = Point(x, y)
         self._position = new_position

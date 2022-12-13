@@ -26,41 +26,30 @@ class HandleCollisionsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
+        self.check_game_over(cast)
         self._handle_game_over(cast)
         if not self._is_game_over:
-        #     self._handle_food_collision(cast)
+            self._handle_food_collision(cast)
         #     self._handle_segment_collision(cast)
             self._handle_mineral_collision(cast)
             self._handle_laser_collision(cast)
 
-    # def _handle_food_collision(self, cast):
-    #     """Updates the score nd moves the food if the snake collides with the food.
+    def _handle_food_collision(self, cast):
+        """Updates the score and moves the food if the snake collides with the food.
         
-    #     Args:
-    #         cast (Cast): The cast of Actors in the game.
-    #     """
-    #     food = cast.get_first_actor("foods")
-    #     snakes = cast.get_actors("snakes")
-    #     snake0 = snakes[0]
-    #     snake1 = snakes[1]
-    #     head0 = snake0.get_head()
-    #     head1 = snake1.get_head()
-    #     scores = cast.get_actors("scores")
-    #     foods = cast.get_actors("foods")
+        Args:
+            cast (Cast): The cast of Actors in the game.
+        """
+        food = cast.get_first_actor("foods")
+        ship = cast.get_first_actor("ships")
+        ship_segments = ship.get_segments()
 
-    #     for food in foods:
-    #         if head0.get_position().equals(food.get_position()):
-    #             points = food.get_points()
-    #             snake0.grow_tail(points)
-    #             scores[0].add_points(points)
-    #             print(scores[0])
-    #             food.reset()
 
-    #         elif head1.get_position().equals(food.get_position()):
-    #             points = food.get_points()
-    #             snake1.grow_tail(points)
-    #             scores[1].add_points(points)
-    #             food.reset()
+        for segment in ship_segments:
+            if food.get_position().equals(segment.get_position()):
+                ship.activate_power()
+                print(ship.get_power())
+                food.reset()
     
     # def _handle_segment_collision(self, cast):
     #     """Sets the game over flag if the snake collides with one of its segments.
@@ -87,14 +76,13 @@ class HandleCollisionsAction(Action):
     def _handle_mineral_collision(self, cast):
         spaceship = cast.get_first_actor("ships")
         segments = spaceship.get_segments()
-        body = segments[1]
-
-        body_position = body.get_position()
         minerals = cast.get_actors("minerals")
         
         for mineral in minerals:
-            mineral_position = mineral.get_position()
-            if body_position.equals(mineral_position):
+            for segment in segments:
+                if mineral.get_position().is_close(segment.get_position()):
+                    spaceship.add_health(-1)
+                    mineral.randomize()
                 """"""
     
     def _handle_laser_collision(self, cast):
@@ -106,7 +94,6 @@ class HandleCollisionsAction(Action):
         spaceship = cast.get_first_actor("ships")
         spaceship_segments = spaceship.get_segments()
         spaceship_lasers = spaceship.get_lasers()
-        health_display = cast.get_first_actor("displays")
 
         minerals = cast.get_actors("minerals")
 
@@ -117,6 +104,7 @@ class HandleCollisionsAction(Action):
                     print("Laser hits")
                     mineral.randomize()
                     spaceship.remove_laser(laser)
+                    spaceship.add_mineral_destroyed()
 
         for segment in asteroid_segments:
             for laser in spaceship_lasers:
@@ -129,11 +117,16 @@ class HandleCollisionsAction(Action):
             for laser in asteroid_lasers:
                 if segment.get_position().is_close(laser.get_position()):
                     spaceship.add_health(-1)
-                    health_display.set_text(f"Health: {spaceship.get_health()}")
                     print("Spaceship hit")
                     asteroid.remove_laser(laser)
                     if spaceship.get_health() <= 0:
                         self._is_game_over = True
+
+    def check_game_over(self, cast):
+        """Checks if there is a game over."""
+        spaceship = cast.get_first_actor("ships")
+        if spaceship.get_health() <= 0:
+            self._is_game_over = True
         
     def _handle_game_over(self, cast):
         """Shows the 'game over' message and turns the snake and food white if the game is over.

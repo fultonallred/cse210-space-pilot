@@ -12,9 +12,14 @@ class Spaceship(Actor):
 
         self._segments = []
         self._lasers = []
-        self._firing = False
-        self._cooldown = 0
         self._health = 10
+        self._minerals_destroyed = 0
+        self._fireable = True
+        self._powerup = False
+        self._power_duration = 0
+        self._next_cooldown = 0
+        self._cooldown = 0
+        
         self._prepare_body()
 
     def _prepare_body(self):
@@ -62,15 +67,43 @@ class Spaceship(Actor):
             y_position = position.get_y()
             if y_position == constants.MAX_Y - 15:
                 self._lasers.remove(laser)
+
+        self.handle_cooldown()
+
         
-        self._cooldown -= 1
-        if self._cooldown < 0: self._cooldown = 0
+    def handle_cooldown(self):
+        """Determines whether laser can fire or not."""
+
+        if self._powerup:
+            if self._cooldown > 0 and self._power_duration > 0:
+                self._cooldown -= 1
+                self._power_duration -= 1
+                self._fireable = False
+
+            elif self._cooldown == 0 and self._power_duration > 0:
+                self._power_duration -= 1
+                self._fireable = True
+                self._next_cooldown = 0
+
+            elif self._power_duration == 0:
+                self._powerup = False
+                self._next_cooldown = 10
+
+        if not self._powerup:
+            if self._cooldown > 0:
+                self._cooldown -= 1
+            else:
+                self._next_cooldown = 10
+                self._fireable = True
 
 
+        
     def fire_laser(self):
         """Fires a laser."""
-
-        if self._cooldown <= 0:
+    
+        if self._fireable:
+            self._fireable = False
+            self._cooldown = self._next_cooldown
             head = self._segments[0]
             laser = Actor()
             laser.set_position(head.get_position())
@@ -78,7 +111,6 @@ class Spaceship(Actor):
             laser.set_text("|")
             laser.set_color(constants.RED)
             self._lasers.append(laser)
-            self._cooldown = 3
 
     def get_lasers(self):
         return self._lasers
@@ -93,3 +125,29 @@ class Spaceship(Actor):
 
     def remove_laser(self, laser):
         self._lasers.remove(laser)
+
+    def activate_power(self):
+        self._powerup = True
+        power_increase = 10 + self._minerals_destroyed
+        self._power_duration += power_increase
+
+    def get_power(self):
+        """Returns power level."""
+        return self._power_duration
+
+    def add_mineral_destroyed(self):
+        """Increases the number of minerals destroyed by spaceship."""
+        self._minerals_destroyed += 1
+        
+    
+
+
+        
+
+
+
+        
+
+
+
+
