@@ -39,7 +39,7 @@ class Mineral(Actor):
         mineral_velocity = Point(0, speed)
         
         x = random.randint(1, constants.COLUMNS - 1)
-        y = random.randint(1, constants.ROWS - 1)
+        y = 0
         position = Point(x, y)
         position = position.scale(constants.CELL_SIZE)
 

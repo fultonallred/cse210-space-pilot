@@ -19,6 +19,7 @@ class HandleCollisionsAction(Action):
         """Constructs a new HandleCollisionsAction."""
         self._is_game_over = False
 
+
     def execute(self, cast, script):
         """Executes the handle collisions action.
 
@@ -26,13 +27,31 @@ class HandleCollisionsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-        self.check_game_over(cast)
-        self._handle_game_over(cast)
+
+        # Get spaceship objects
+        self._spaceship = cast.get_first_actor("ships")
+        self._spaceship_segments = self._spaceship.get_segments()
+        self._spaceship_lasers = self._spaceship.get_lasers()
+
+        # Get asteroid objects
+        self._asteroids = cast.get_actors("asteroids")
+        self._asteroid_segments = []
+        self._asteroid_lasers = []
+        for asteroid in self._asteroids:
+            self._asteroid_segments.extend(asteroid.get_segments())
+            self._asteroid_lasers.extend(asteroid.get_lasers())
+
+        self._minerals = cast.get_actors("minerals")
+
+        self._food = cast.get_first_actor("foods")
+
         if not self._is_game_over:
             self._handle_food_collision(cast)
         #     self._handle_segment_collision(cast)
             self._handle_mineral_collision(cast)
             self._handle_laser_collision(cast)
+            self.check_game_over(cast)
+            self._handle_game_over(cast)
 
     def _handle_food_collision(self, cast):
         """Updates the score and moves the food if the snake collides with the food.
@@ -50,30 +69,10 @@ class HandleCollisionsAction(Action):
                 ship.activate_power()
                 print(ship.get_power())
                 food.reset()
-    
-    # def _handle_segment_collision(self, cast):
-    #     """Sets the game over flag if the snake collides with one of its segments.
-        
-    #     Args:
-    #         cast (Cast): The cast of Actors in the game.
-    #     """
-    #     snake0 = cast.get_actor("snakes", 0)
-    #     snake1 = cast.get_actor("snakes", 1)
-
-    #     head0 = snake0.get_segments()[0]
-    #     head1 = snake1.get_segments()[0]
-
-    #     segments0 = snake0.get_segments()[1:]
-    #     segments1 = snake1.get_segments()[1:]
-
-    #     segments = segments0 + segments1
-    #     for segment in segments:
-    #         if head0.get_position().equals(segment.get_position()):
-    #             self._is_game_over = True
-    #         elif head1.get_position().equals(segment.get_position()):
-    #             self._is_game_over = True
 
     def _handle_mineral_collision(self, cast):
+        """Decreases player health if they collide with a mineral."""
+
         spaceship = cast.get_first_actor("ships")
         segments = spaceship.get_segments()
         minerals = cast.get_actors("minerals")

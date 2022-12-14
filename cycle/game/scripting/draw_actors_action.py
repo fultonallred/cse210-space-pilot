@@ -26,25 +26,57 @@ class DrawActorsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-        health_display = cast.get_first_actor("displays")
-        minerals = cast.get_actors("minerals")
-        food = cast.get_first_actor("foods")
-        spaceship = cast.get_first_actor("ships")
-        spaceship_segments = spaceship.get_segments()
-        ship_lasers = spaceship.get_lasers()
-        asteroid = cast.get_first_actor("asteroids")
-        asteroid_segments = asteroid.get_segments()
-        asteroid_lasers = asteroid.get_lasers()
-        messages = cast.get_actors("messages")
-
+        
         self._video_service.clear_buffer()
-        self._video_service.draw_actor(food)
-        self._video_service.draw_actor(health_display)
-        self._video_service.draw_actors(minerals)
-        self._video_service.draw_actors(spaceship_segments)
-        self._video_service.draw_actors(ship_lasers)
+        
+        self._draw_spaceship(cast, script)
+        self._draw_asteroids(cast, script)
+        self._draw_hud(cast, script)
+        self._draw_others(cast, script)
+      
+        self._video_service.flush_buffer()
+
+    def _draw_asteroids(self, cast, script):
+        """This draws all asteroids and lasers."""
+
+        asteroids = cast.get_actors("asteroids")
+        asteroid_segments = []
+        asteroid_lasers = []
+        
+        for asteroid in asteroids:
+            segments = asteroid.get_segments()
+            lasers = asteroid.get_lasers()
+            asteroid_segments.extend(segments)
+            asteroid_lasers.extend(lasers)
+        
         self._video_service.draw_actors(asteroid_segments)
         self._video_service.draw_actors(asteroid_lasers)
+
+    def _draw_spaceship(self, cast, script):
+        """Draws the player's ship and lasers."""
+
+        spaceship = cast.get_first_actor("ships")
+        spaceship_segments = spaceship.get_segments()
+        spaceship_lasers = spaceship.get_lasers()
+
+        self._video_service.draw_actors(spaceship_segments)
+        self._video_service.draw_actors(spaceship_lasers)
+
+    def _draw_hud(self, cast, script):
+        """This draws all elements of the heads-up-display."""
+
+        messages = cast.get_actors("messages")
         self._video_service.draw_actors(messages, True)
 
-        self._video_service.flush_buffer()
+        health_display = cast.get_first_actor("displays")
+        self._video_service.draw_actor(health_display)
+
+
+    def _draw_others(self, cast, script):
+        """Draws all other actors without dedicated methods."""
+
+        food = cast.get_first_actor("foods")
+        self._video_service.draw_actor(food)
+
+        minerals = cast.get_actors("minerals")
+        self._video_service.draw_actors(minerals)

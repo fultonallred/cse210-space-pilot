@@ -24,7 +24,8 @@ from game.directing.director import Director
 from game.services.keyboard_service import KeyboardService
 from game.services.video_service import VideoService
 from game.scripting.udpate_hud import UpdateHUD
-
+from game.casting.frame_counter import FrameCounter
+from game.scripting.add_enemies_action import AddEnemiesAction
 def main():
     
     # create the casts
@@ -37,10 +38,11 @@ def main():
     cast.add_actor("asteroids", Asteroid())
     cast.add_actor("displays", HealthDisplay())
     cast.add_actor("scores", Score1())
+    cast.add_actor("frame_counter", FrameCounter())
 
-    for _ in range(constants.DEFAULT_MINERALS):
-        mineral = Mineral()
-        cast.add_actor("minerals", mineral)
+    # for _ in range(constants.DEFAULT_MINERALS):
+    # mineral = Mineral()
+    # cast.add_actor("minerals", mineral)
          
   
     # start the game
@@ -53,6 +55,7 @@ def main():
     script.add_action("input", ControlSpaceshipAction(keyboard_service))
     script.add_action("update", MoveActorsAction())
     script.add_action("update", UpdateHUD())
+    script.add_action("update", AddEnemiesAction())
     #script.add_action("update", ControlMineralsAction())
     script.add_action("update", HandleCollisionsAction())
     #script.add_action("update", RandomGrowth())
