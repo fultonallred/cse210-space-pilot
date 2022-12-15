@@ -7,6 +7,8 @@ from game.casting.actor import Actor
 
 
 class Asteroid(Spaceship):
+    """Asteroid moves from the top to bottom of the screen and must be shot
+    multiple times to be destroyed."""
     
     def __init__(self):
         super().__init__()
@@ -16,6 +18,8 @@ class Asteroid(Spaceship):
         self._health = 10
 
     def _prepare_body(self):
+        """Creates the body segments of Asteroid, called through parent
+        constructor."""
         
         x = random.randint(1, constants.COLUMNS - 2) * constants.CELL_SIZE
         y = -30
@@ -36,17 +40,15 @@ class Asteroid(Spaceship):
         Point(0, 0), "0", constants.GREEN)
 
     def move_next(self):
+        """Handles the movement of each segment and laser."""
         for segment in self._segments:
             segment.set_velocity(self._velocity)
             segment.move_next()
 
-        head_y = self._segments[0].get_position().get_y()
-        if constants.MAX_Y - head_y <= 1:
-            self.reset()
-
-        trigger = random.randint(1, 20)
-        if trigger == 1:
-            self.fire_laser()
+        # trigger = random.randint(1, 20)
+        
+        # if trigger == 1:
+        #     self.fire_laser()
 
         for laser in self._lasers:
             laser.move_next()
@@ -56,15 +58,17 @@ class Asteroid(Spaceship):
                 self._lasers.remove(laser)
 
     def fire_laser(self):
+        """Creates a new laser object."""
         head = self._segments[2]
         laser = Actor()
         laser.set_position(head.get_position())
-        laser.set_velocity(Point(0, 1 * constants.CELL_SIZE))
+        laser.set_velocity(Point(0, 15))
         laser.set_text("|")
         laser.set_color(constants.RED)
         self._lasers.append(laser)
 
     def reset(self):
+        """Resets the asteroid."""
         self._segments = []
         self._health = 10
         self._prepare_body()
@@ -72,7 +76,5 @@ class Asteroid(Spaceship):
         self._velocity = Point(0, speed)
 
     def add_damage(self, amount):
+        """Decreases health by given amount."""
         self._health -= amount
-
-        if self._health == 0:
-            self.reset()

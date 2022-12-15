@@ -31,30 +31,39 @@ class ControlSpaceshipAction(Action):
             script (Script): The script of Actions in the game.
         """
         spaceship = cast.get_first_actor("ships")
+        is_game_over = script.get_actions("update")[3].get_game_over()
+        speed_boost = 1
 
-        # remain still
         dx = 0
         dy = 0
 
-        # left
-        if self._keyboard_service.is_key_down('A'):
-            dx = -1
-        
-        # right
-        if self._keyboard_service.is_key_down('D'):
-            dx = 1
-        # up
-        if self._keyboard_service.is_key_down('W'):
-            dy = -1
-        # down
-        if self._keyboard_service.is_key_down('S'):
-            dy = 1
+        if not is_game_over:
+            # remain still
 
-        if self._keyboard_service.is_key_down('space'):
-            spaceship.fire_laser()
+            # left
+            if self._keyboard_service.is_key_down('A'):
+                dx = -1
             
+            # right
+            if self._keyboard_service.is_key_down('D'):
+                dx = 1
+            # up
+            if self._keyboard_service.is_key_down('W'):
+                dy = -1
+            # down
+            if (self._keyboard_service.is_key_down('S') 
+                and not spaceship.get_at_bottom()):
+                dy = 1
+
+            # shoot laser
+            if self._keyboard_service.is_key_down('space'):
+                spaceship.fire_laser()
+
+            # if self._keyboard_service.is_key_down('shift'):
+            #     speed_boost = 2
+                
 
         self._direction = Point(dx, dy)
-        self._direction = self._direction.scale(constants.CELL_SIZE)
+        self._direction = self._direction.scale(constants.CELL_SIZE * speed_boost)
         spaceship.set_velocity(self._direction)
         

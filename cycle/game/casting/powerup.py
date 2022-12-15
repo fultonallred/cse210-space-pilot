@@ -4,25 +4,19 @@ from game.casting.actor import Actor
 from game.shared.point import Point
 
 
-class Food(Actor):
-    """
-    A tasty item that snakes like to eat.
-    
-    The responsibility of Food is to select a random position and points that it's worth.
-
-    Attributes:
-        _points (int): The number of points the food is worth.
+class Powerup(Actor):
+    """The responsibility of Powerup is to provide a benefit when contacted.
     """
     def __init__(self):
-        "Constructs a new Food."
+        "Constructs a new instance of Powerup."
         super().__init__()
-        self._points = 0
+        #self._points = 0
         self.set_text("@")
         self.set_color(constants.RED)
         self.reset()
         
     def reset(self):
-        """Selects a random position and points that the food is worth."""
+        """Selects a random position and points that the powerup is worth."""
         self._points = random.randint(1, 8)
         x = random.randint(1, constants.COLUMNS - 1)
         y = random.randint(1, constants.ROWS - 1)
@@ -31,7 +25,7 @@ class Food(Actor):
         self.set_position(position)
         
     def get_points(self):
-        """Gets the points the food is worth.
+        """Gets the points the powerup is worth.
         
         Returns:
             points (int): The points the food is worth.

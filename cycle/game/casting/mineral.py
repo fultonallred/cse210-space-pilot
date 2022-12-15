@@ -21,9 +21,15 @@ class Mineral(Actor):
             
             Args:
                 self (Mineral): an instance of Mineral
+
+            Attributes:
+                mineral_type (str): what type of mineral it is
+                value (int): the points it is worth
+                at_bottom (bool): whether it is at the bottom of the screen
             """
         self._mineral_type = ""
         self._value = 1
+        self._at_bottom = False
         self.prepare_mineral()
 
     def get_value(self):
@@ -34,6 +40,7 @@ class Mineral(Actor):
         return self._value
 
     def prepare_mineral(self):
+        """Sets attributes of the mineral."""
 
         speed = random.randint(1, 5)
         mineral_velocity = Point(0, speed)
@@ -55,16 +62,17 @@ class Mineral(Actor):
         self.set_text("#")
 
     def move_next(self):
+        """Moves the mineral to its next position."""
 
         x = (self._position.get_x() + self._velocity.get_x()) % constants.MAX_X
         y = (self._position.get_y() + self._velocity.get_y()) % constants.MAX_Y
         self._position = Point(x, y)
         
-        if 600 - self._position.get_y() <= 1:
-            self.randomize()
+        if constants.MAX_Y - self._position.get_y() <= 6:
+            self._at_bottom = True
 
     def randomize(self):
-        """Sets the mineral's type as either a gem or rock.
+        """Randomizes Mineral's attributes.
         
         Args:
             self (Mineral): an instance of Mineral
@@ -89,7 +97,13 @@ class Mineral(Actor):
         b = random.randint(0, 255)
         self._color = Color(r, g, b)
 
-        x = random.randint(1, 59) * 15
+        x = random.randint(1, constants.COLUMNS - 1) * constants.CELL_SIZE
         y = 0
         new_position = Point(x, y)
         self._position = new_position
+
+    def get_at_bottom(self):
+        """Returns whether the mineral is at the bottom of the screen
+        as a bool.
+        """
+        return self._at_bottom

@@ -75,8 +75,8 @@ class DrawActorsAction(Action):
     def _draw_others(self, cast, script):
         """Draws all other actors without dedicated methods."""
 
-        food = cast.get_first_actor("foods")
-        self._video_service.draw_actor(food)
+        powerup = cast.get_first_actor("pickups")
+        self._video_service.draw_actor(powerup)
 
         minerals = cast.get_actors("minerals")
         self._video_service.draw_actors(minerals)

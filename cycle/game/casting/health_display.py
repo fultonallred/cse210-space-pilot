@@ -12,12 +12,3 @@ class HealthDisplay(Actor):
     Attributes:
         _points (int): The points earned in the game.
     """
-    def __init__(self):
-        super().__init__()
-
-    
-
-     
-
-
-    

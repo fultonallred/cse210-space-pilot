@@ -18,6 +18,7 @@ class HandleCollisionsAction(Action):
     def __init__(self):
         """Constructs a new HandleCollisionsAction."""
         self._is_game_over = False
+        self._removed = 0
 
 
     def execute(self, cast, script):
@@ -27,104 +28,91 @@ class HandleCollisionsAction(Action):
             cast (Cast): The cast of Actors in the game.
             script (Script): The script of Actions in the game.
         """
-
-        # Get spaceship objects
         self._spaceship = cast.get_first_actor("ships")
         self._spaceship_segments = self._spaceship.get_segments()
         self._spaceship_lasers = self._spaceship.get_lasers()
-
-        # Get asteroid objects
         self._asteroids = cast.get_actors("asteroids")
-        self._asteroid_segments = []
-        self._asteroid_lasers = []
-        for asteroid in self._asteroids:
-            self._asteroid_segments.extend(asteroid.get_segments())
-            self._asteroid_lasers.extend(asteroid.get_lasers())
-
         self._minerals = cast.get_actors("minerals")
-
-        self._food = cast.get_first_actor("foods")
+        self._powerup = cast.get_first_actor("pickups")
 
         if not self._is_game_over:
             self._handle_food_collision(cast)
-        #     self._handle_segment_collision(cast)
             self._handle_mineral_collision(cast)
             self._handle_laser_collision(cast)
             self.check_game_over(cast)
             self._handle_game_over(cast)
 
     def _handle_food_collision(self, cast):
-        """Updates the score and moves the food if the snake collides with the food.
+        """Updates the score and moves the food if the player collides with it.
         
         Args:
             cast (Cast): The cast of Actors in the game.
         """
-        food = cast.get_first_actor("foods")
-        ship = cast.get_first_actor("ships")
-        ship_segments = ship.get_segments()
 
-
-        for segment in ship_segments:
-            if food.get_position().equals(segment.get_position()):
-                ship.activate_power()
-                print(ship.get_power())
-                food.reset()
+        for segment in self._spaceship_segments:
+            if self._powerup.get_position().equals(segment.get_position()):
+                self._spaceship.activate_power()
+                self._powerup.reset()
 
     def _handle_mineral_collision(self, cast):
-        """Decreases player health if they collide with a mineral."""
+        """Decreases player health if they collide with a mineral. Removes
+        mineral upon player contact or contact with bottom of screen.
+        """
 
-        spaceship = cast.get_first_actor("ships")
-        segments = spaceship.get_segments()
-        minerals = cast.get_actors("minerals")
-        
-        for mineral in minerals:
-            for segment in segments:
-                if mineral.get_position().is_close(segment.get_position()):
-                    spaceship.add_health(-1)
-                    mineral.randomize()
-                """"""
+        for mineral in self._minerals:
+            if mineral.get_at_bottom():
+                cast.remove_actor("minerals", mineral)
+                return
+            else:
+                for segment in self._spaceship_segments:
+                    if mineral.get_position().is_close(segment.get_position()):
+                        self._spaceship.add_health(-1)
+                        cast.remove_actor("minerals", mineral)
+                        mineral.randomize()
     
     def _handle_laser_collision(self, cast):
         """"""
-        asteroid = cast.get_first_actor("asteroids")
-        asteroid_segments = asteroid.get_segments()
-        asteroid_lasers = asteroid.get_lasers()
 
-        spaceship = cast.get_first_actor("ships")
-        spaceship_segments = spaceship.get_segments()
-        spaceship_lasers = spaceship.get_lasers()
-
-        minerals = cast.get_actors("minerals")
-
-        # Handle spaceship lasers.
-        for mineral in minerals:
-            for laser in spaceship_lasers:
+        # Handle spaceship-mineral contact.
+        for mineral in self._minerals:
+            for laser in self._spaceship_lasers:
                 if mineral.get_position().is_close(laser.get_position()):
-                    print("Laser hits")
-                    mineral.randomize()
-                    spaceship.remove_laser(laser)
-                    spaceship.add_mineral_destroyed()
+                    cast.remove_actor("minerals", mineral)
+                    self._spaceship.remove_laser(laser)
+                    self._spaceship.add_mineral_destroyed()
 
-        for segment in asteroid_segments:
-            for laser in spaceship_lasers:
-                if segment.get_position().is_close(laser.get_position()):
-                    asteroid.add_damage(1)
-                    spaceship.remove_laser(laser)
+        # Handle asteroid-spaceship contact.
+        for asteroid in self._asteroids:
+            segments = asteroid.get_segments()
+            for segment in segments:
+                for ship_segment in self._spaceship_segments:
+                    if segment.get_position().is_close(ship_segment.get_position()):
+                        self._spaceship.add_health(-1)
+                for laser in self._spaceship_lasers:
+                    remove = False
+                    if segment.get_position().is_close(laser.get_position()):
+                        asteroid.add_damage(1)
+                        remove = True
+                        print("Asteroid hit")
+                        if asteroid.get_health() <= 0:
+                            print("Asteroid killed")
+                            cast.remove_actor("asteroids", asteroid)
+                    if remove:
+                        self._spaceship.remove_laser(laser)
 
-        # Handle asteroid lasers.
-        for segment in spaceship_segments:
-            for laser in asteroid_lasers:
-                if segment.get_position().is_close(laser.get_position()):
-                    spaceship.add_health(-1)
-                    print("Spaceship hit")
+            for laser in asteroid.get_lasers():
+                remove = False
+                for segment in self._spaceship_segments:
+                    if segment.get_position().is_close(laser.get_position()):
+                        self._spaceship.add_health(-1)
+                        remove = True
+                if remove:
                     asteroid.remove_laser(laser)
-                    if spaceship.get_health() <= 0:
-                        self._is_game_over = True
+                    
 
     def check_game_over(self, cast):
         """Checks if there is a game over."""
-        spaceship = cast.get_first_actor("ships")
-        if spaceship.get_health() <= 0:
+        if self._spaceship.get_health() <= 0:
             self._is_game_over = True
         
     def _handle_game_over(self, cast):
@@ -135,21 +123,17 @@ class HandleCollisionsAction(Action):
         """
         if self._is_game_over:
 
-            asteroid = cast.get_first_actor("asteroids")
-            asteroid_segments = asteroid.get_segments()
-            asteroid_lasers = asteroid.get_lasers()
 
-            spaceship = cast.get_first_actor("ships")
-            spaceship_segments = spaceship.get_segments()
-            spaceship_lasers = spaceship.get_lasers()
-            health_display = cast.get_first_actor("displays")
+            health_display = cast.get_actors("displays")
+            asteroid_segments = []
+            for asteroid in self._asteroids:
+                asteroid_segments.extend(asteroid.get_segments())
 
             actors = cast.get_all_actors()
             actors.extend(asteroid_segments)
-            actors.extend(asteroid_lasers)
-            actors.extend(spaceship_segments)
-            actors.extend(spaceship_lasers)
-            actors.append(health_display)
+            actors.extend(self._spaceship_segments)
+            actors.extend(self._spaceship_lasers)
+            actors.extend(health_display)
 
             for actor in actors:
                 actor.set_color(constants.WHITE)

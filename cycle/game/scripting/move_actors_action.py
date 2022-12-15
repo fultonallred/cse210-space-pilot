@@ -15,7 +15,12 @@ class MoveActorsAction(Action):
     """
 
     def execute(self, cast, script):
-        """Gets all actors and tells them to move to their next position."""
+        """Gets all actors and tells them to move to their next position.
+
+        Args:
+            cast (Cast): The cast of Actors in the game.
+            script (Script): The script of Actions in the game.
+        """
 
         actors = cast.get_all_actors()
         for actor in actors:
