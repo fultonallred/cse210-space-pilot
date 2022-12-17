@@ -39,22 +39,22 @@ class Asteroid(Spaceship):
         self._prepare_segment(Point(x + constants.CELL_SIZE, y), 
         Point(0, 0), "0", constants.GREEN)
 
-    def move_next(self):
-        """Handles the movement of each segment and laser."""
-        for segment in self._segments:
-            segment.set_velocity(self._velocity)
-            segment.move_next()
+    # def move_next(self):
+    #     """Handles the movement of each segment and laser."""
+    #     for segment in self._segments:
+    #         segment.set_velocity(self._velocity)
+    #         segment.move_next()
 
-        # This code enables the asteroid to fire lasers.
-        # trigger = random.randint(1, 20)
-        # if trigger == 1:
-        #     self.fire_laser()
-        # for laser in self._lasers:
-        #     laser.move_next()
-        #     position = laser.get_position()
-        #     y_position = position.get_y()
-        #     if y_position == constants.MAX_Y:
-        #         self._lasers.remove(laser)
+    #     # This code enables the asteroid to fire lasers.
+    #     # trigger = random.randint(1, 20)
+    #     # if trigger == 1:
+    #     #     self.fire_laser()
+    #     # for laser in self._lasers:
+    #     #     laser.move_next()
+    #     #     position = laser.get_position()
+    #     #     y_position = position.get_y()
+    #     #     if y_position == constants.MAX_Y:
+    #     #         self._lasers.remove(laser)
 
 
     def _fire_laser(self):

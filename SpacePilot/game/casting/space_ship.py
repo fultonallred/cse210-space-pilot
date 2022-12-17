@@ -1,5 +1,4 @@
 import constants
-import random
 from game.shared.point import Point
 from game.casting.actor import Actor
 
