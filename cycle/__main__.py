@@ -1,7 +1,7 @@
 from game.casting.cast import Cast
+from game.casting.actor import Actor
 from game.casting.powerup import Powerup
 from game.casting.frame_counter import FrameCounter
-from game.casting.health_display import HealthDisplay
 from game.casting.space_ship import Spaceship
 from game.casting.mineral import Mineral
 
@@ -22,7 +22,7 @@ def main():
     cast = Cast()
     cast.add_actor("pickups", Powerup())
     cast.add_actor("ships", Spaceship())
-    cast.add_actor("displays", HealthDisplay())
+    cast.add_actor("displays", Actor())
     cast.add_actor("frame_counter", FrameCounter())
     cast.add_actor("minerals", Mineral())
   

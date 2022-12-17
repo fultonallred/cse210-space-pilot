@@ -16,6 +16,7 @@ class Spaceship(Actor):
             lasers (list): a list of lasers fired by the Spaceship
             health (int): Spaceship's health
             minerals_destroyed (int): how many minerals Spaceship has shot
+            asteroids_destroyed (int): how many asteroids Spaceship has destroyed
             fireable (bool): Whether the Spaceship is able to fire a laser
             power_duration (int): How many times Spaceship can fire a laser
             cooldown (int): the current laser cooldown timer being used
@@ -26,6 +27,7 @@ class Spaceship(Actor):
         self._lasers = []
         self._health = 10
         self._minerals_destroyed = 0
+        self._asteroids_destroyed = 0
         self._fireable = False
         #self._powerup = False
         self._power_duration = 0
@@ -85,11 +87,11 @@ class Spaceship(Actor):
             if y_position == constants.MAX_Y - 15:
                 self._lasers.remove(laser)
 
-        self.handle_cooldown()
+        self._handle_cooldown()
 
         
-    def handle_cooldown(self):
-        """Determines whether laser can fire or not."""
+    def _handle_cooldown(self):
+        """Determines whether laser is ready to fire again."""
 
         # Code for different cooldown rates with a powerup.
         # if self._powerup:
@@ -138,7 +140,10 @@ class Spaceship(Actor):
 
     def add_health(self, health):
         """Add a given amount of heatlh, positive or negative, to the spacehship."""
-        self._health += health
+        if self._health == 0:
+            self._health = 0
+        else:
+            self._health += health
 
     def remove_laser(self, laser):
         self._lasers.remove(laser)
@@ -152,8 +157,12 @@ class Spaceship(Actor):
 
 
     def add_mineral_destroyed(self):
-        """Increases the number of minerals destroyed by Spaceship."""
+        """Increases the count of minerals destroyed by Spaceship."""
         self._minerals_destroyed += 1
+
+    def add_asteroid_destroyed(self):
+        """Increases the count of asteroids destroyed."""
+        self._asteroids_destroyed += 1
 
     def check_at_bottom(self):
         ship_bottom = self._segments[1].get_position()
@@ -172,7 +181,14 @@ class Spaceship(Actor):
 
     def get_at_bottom(self):
         return self._at_bottom
+
+    def get_asteroids_destroyed(self):
+        """Returns count of asteroids destroyed."""
+        return self._asteroids_destroyed
     
+    def get_minerals_destroyed(self):
+        """Returns count of minerals destroyed."""
+        return self._minerals_destroyed
 
 
         

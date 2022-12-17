@@ -34,12 +34,13 @@ class HandleCollisionsAction(Action):
         self._asteroids = cast.get_actors("asteroids")
         self._minerals = cast.get_actors("minerals")
         self._powerup = cast.get_first_actor("pickups")
+        self._health_display = cast.get_first_actor("displays")
 
         if not self._is_game_over:
             self._handle_food_collision(cast)
             self._handle_mineral_collision(cast)
             self._handle_laser_collision(cast)
-            self.check_game_over(cast)
+            self._check_game_over(cast)
             self._handle_game_over(cast)
 
     def _handle_food_collision(self, cast):
@@ -62,7 +63,6 @@ class HandleCollisionsAction(Action):
         for mineral in self._minerals:
             if mineral.get_at_bottom():
                 cast.remove_actor("minerals", mineral)
-                return
             else:
                 for segment in self._spaceship_segments:
                     if mineral.get_position().is_close(segment.get_position()):
@@ -75,42 +75,51 @@ class HandleCollisionsAction(Action):
 
         # Handle spaceship-mineral contact.
         for mineral in self._minerals:
+            remove = False
             for laser in self._spaceship_lasers:
                 if mineral.get_position().is_close(laser.get_position()):
-                    cast.remove_actor("minerals", mineral)
+                    remove = True
                     self._spaceship.remove_laser(laser)
                     self._spaceship.add_mineral_destroyed()
+            if remove:
+                    cast.remove_actor("minerals", mineral)
 
         # Handle asteroid-spaceship contact.
         for asteroid in self._asteroids:
             segments = asteroid.get_segments()
+
             for segment in segments:
+
                 for ship_segment in self._spaceship_segments:
                     if segment.get_position().is_close(ship_segment.get_position()):
                         self._spaceship.add_health(-1)
+
                 for laser in self._spaceship_lasers:
-                    remove = False
+                    remove_laser = False
                     if segment.get_position().is_close(laser.get_position()):
                         asteroid.add_damage(1)
-                        remove = True
-                        print("Asteroid hit")
-                        if asteroid.get_health() <= 0:
-                            print("Asteroid killed")
-                            cast.remove_actor("asteroids", asteroid)
-                    if remove:
+                        remove_laser = True
+                    if remove_laser:
                         self._spaceship.remove_laser(laser)
 
+            if asteroid.get_health() <= 0:
+                cast.remove_actor("asteroids", asteroid)
+                self._spaceship.add_asteroid_destroyed()
+                print(self._spaceship.get_asteroids_destroyed())
+
             for laser in asteroid.get_lasers():
-                remove = False
+                remove_laser = False
+
                 for segment in self._spaceship_segments:
                     if segment.get_position().is_close(laser.get_position()):
                         self._spaceship.add_health(-1)
                         remove = True
-                if remove:
+
+                if remove_laser:
                     asteroid.remove_laser(laser)
                     
 
-    def check_game_over(self, cast):
+    def _check_game_over(self, cast):
         """Checks if there is a game over."""
         if self._spaceship.get_health() <= 0:
             self._is_game_over = True

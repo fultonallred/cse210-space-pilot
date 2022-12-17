@@ -1,7 +1,6 @@
 from game.casting.space_ship import Spaceship
 import random
 import constants
-from game.shared.color import Color
 from game.shared.point import Point
 from game.casting.actor import Actor
 
@@ -11,6 +10,7 @@ class Asteroid(Spaceship):
     multiple times to be destroyed."""
     
     def __init__(self):
+        """Constructs a new instance of Asteroid."""
         super().__init__()
 
         speed = random.randint(1, 5)
@@ -45,19 +45,19 @@ class Asteroid(Spaceship):
             segment.set_velocity(self._velocity)
             segment.move_next()
 
+        # This code enables the asteroid to fire lasers.
         # trigger = random.randint(1, 20)
-        
         # if trigger == 1:
         #     self.fire_laser()
+        # for laser in self._lasers:
+        #     laser.move_next()
+        #     position = laser.get_position()
+        #     y_position = position.get_y()
+        #     if y_position == constants.MAX_Y:
+        #         self._lasers.remove(laser)
 
-        for laser in self._lasers:
-            laser.move_next()
-            position = laser.get_position()
-            y_position = position.get_y()
-            if y_position == constants.MAX_Y:
-                self._lasers.remove(laser)
 
-    def fire_laser(self):
+    def _fire_laser(self):
         """Creates a new laser object."""
         head = self._segments[2]
         laser = Actor()

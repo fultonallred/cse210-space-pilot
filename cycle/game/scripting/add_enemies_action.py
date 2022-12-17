@@ -1,3 +1,4 @@
+import random
 from game.scripting.action import Action
 from game.casting.asteroid import Asteroid
 from game.casting.mineral import Mineral
@@ -9,6 +10,9 @@ class AddEnemiesAction(Action):
     Attributes:
         None
     """
+    def __init__(self):
+        """Constructs a new instance of AddEnemiesAction."""
+        self._mineral_increase = 1
 
     def execute(self, cast, script):
         """Checks if game is ready to add more enemies and calls methods
@@ -23,12 +27,27 @@ class AddEnemiesAction(Action):
         if not is_game_over:
             frame_counter = cast.get_first_actor("frame_counter")
             frames = frame_counter.get_frames()
+            spaceship = cast.get_first_actor("ships")
+            minerals_destroyed = spaceship.get_minerals_destroyed()
+            if minerals_destroyed > 998:
+                minerals_destroyed = 998
 
-            if frames % 360 == 0:
+            # A new asteroid is added every 360 frames. The chance for extras
+            # to spawn increases with each asteroid destroyed.
+            asteroids_destroyed = spaceship.get_asteroids_destroyed()
+            if asteroids_destroyed > 98:
+                asteroids_destroyed = 98
+            new_asteroid = random.randint(1, 360 - asteroids_destroyed) == 1
+            if frames % 360 == 0 or new_asteroid:
                 self._add_asteroid(cast)
 
+            # Minerals are added every 36 frames. The amount added has a
+            # greater chance to increase with every mineral destroyed.
+            if random.randint(1, 1000 - minerals_destroyed) == 1:
+                self._mineral_increase += 1
             if frames % 36 == 0:
-                self._add_mineral(cast)
+                for n in range(self._mineral_increase):
+                    self._add_mineral(cast)
 
     def _add_asteroid(self, cast):
         """Create an additional asteroid."""

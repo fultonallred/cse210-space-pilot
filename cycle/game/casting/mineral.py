@@ -30,16 +30,10 @@ class Mineral(Actor):
         self._mineral_type = ""
         self._value = 1
         self._at_bottom = False
-        self.prepare_mineral()
+        self._prepare_mineral()
 
-    def get_value(self):
-        """Returns point value of the mineral.
-        Args:
-            self (Mineral): an instance of Mineral
-        """
-        return self._value
 
-    def prepare_mineral(self):
+    def _prepare_mineral(self):
         """Sets attributes of the mineral."""
 
         speed = random.randint(1, 5)
@@ -107,3 +101,10 @@ class Mineral(Actor):
         as a bool.
         """
         return self._at_bottom
+
+    def get_value(self):
+        """Returns point value of the mineral.
+        Args:
+            self (Mineral): an instance of Mineral
+        """
+        return self._value
